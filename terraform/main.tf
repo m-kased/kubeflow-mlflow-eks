@@ -1,5 +1,6 @@
 module "vpc" {
-  source         = "./modules/vpc"
+  source = "./modules/vpc"
+
   env            = var.env
   zone1          = var.zone1
   zone2          = var.zone2
@@ -8,7 +9,8 @@ module "vpc" {
 }
 
 module "eks" {
-  source          = "./modules/eks"
+  source = "./modules/eks"
+
   env             = var.env
   subnet_zone1_id = module.vpc.subnet_zone1_id
   subnet_zone2_id = module.vpc.subnet_zone2_id
@@ -23,4 +25,14 @@ module "k8s" {
   }
   env            = var.env
   terraform_tags = var.terraform_tags
+}
+
+module "helm" {
+  source = "./modules/helm"
+
+  eks_cluster_name    = module.eks.eks_cluster_name
+  vpc_id              = module.vpc.vpc_id
+  eks_cluster_node_id = module.eks.eks_cluster_node_id
+  region              = var.region
+  grafana_password    = var.grafana_password
 }
