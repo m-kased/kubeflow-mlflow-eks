@@ -32,3 +32,21 @@ variable "terraform_tags" {
 variable "grafana_password" {
   type = string
 }
+variable "local_helm_repo" {
+  description = "Local Helm charts path"
+  type        = string
+  default     = "../../helm/charts"
+}
+variable "static_email" {
+  type    = string
+  default = "user@example.com"
+}
+variable "kubeflow_user_profile" {
+  type    = string
+  default = "kubeflow-user-example-com"
+}
+variable "tags" {
+  description = "A map of tags to assign to the resources."
+  type        = map(string)
+  default     = {}
+}
