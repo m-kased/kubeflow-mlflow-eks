@@ -13,3 +13,7 @@ data "aws_iam_policy_document" "ebs_csi_driver" {
     ]
   }
 }
+
+data "tls_certificate" "this" {
+  url = aws_eks_cluster.eks.identity[0].oidc[0].issuer
+}

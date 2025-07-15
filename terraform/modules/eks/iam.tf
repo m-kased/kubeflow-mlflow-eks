@@ -157,3 +157,62 @@ resource "aws_iam_role_policy_attachment" "ebs_csi_driver" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   role       = aws_iam_role.ebs_csi_driver.name
 }
+
+resource "aws_iam_openid_connect_provider" "eks_oidc_provider" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.this.certificates[0].sha1_fingerprint]
+  url             = aws_eks_cluster.eks.identity[0].oidc[0].issuer
+}
+
+module "profiles_controller_irsa" {
+  source  = "aws-ia/eks-blueprints-addon/aws"
+  version = "1.1.1"
+
+  create_release = false
+
+  # IAM role for service account (IRSA)
+  create_role   = true
+  create_policy = true
+  role_name     = substr("${aws_eks_cluster.eks.id}-profiles-controller", 0, 38)
+  policy_name   = substr("${aws_eks_cluster.eks.id}-profiles-controller", 0, 38)
+  policy_statements = [
+    {
+      sid       = "statement0"
+      effect    = "Allow"
+      actions   = ["iam:GetRole", "iam:UpdateAssumeRolePolicy"],
+      resources = ["*"]
+    }
+  ]
+
+  oidc_providers = {
+    this = {
+      provider_arn    = aws_iam_openid_connect_provider.eks_oidc_provider.arn
+      namespace       = "kubeflow"
+      service_account = "profiles-controller-service-account"
+    }
+  }
+}
+
+resource "aws_iam_role" "user_profile_role" {
+  name = "${aws_eks_cluster.eks.id}-user-profile"
+
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+      "Effect": "Allow",
+      "Principal": {
+          "Federated": "${aws_iam_openid_connect_provider.eks_oidc_provider.arn}"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+          "StringEquals": {
+          "${substr(aws_eks_cluster.eks.identity[0].oidc[0].issuer, 8, -1)}:aud": "sts.amazonaws.com"
+          }
+      }
+      }
+  ]
+}
+POLICY
+}
