@@ -57,3 +57,15 @@ module "kubeflow" {
 
   depends_on = [module.eks, module.k8s, module.helm]
 }
+
+module "mlflow" {
+  source = "./modules/mlflow"
+
+  eks_cluster_name = module.eks.eks_cluster_name
+  region           = var.region
+  subnet_ids       = [module.vpc.subnet_zone1_id, module.vpc.subnet_zone2_id]
+  vpc_id           = module.vpc.vpc_id
+  terraform_tags   = var.terraform_tags
+
+  depends_on = [module.eks, module.kubeflow]
+}

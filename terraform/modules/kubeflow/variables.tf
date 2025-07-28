@@ -1,5 +1,5 @@
 variable "eks_cluster_name" {
-  type        = string
+  type = string
 }
 variable "local_helm_repo" {
   description = "Local Helm charts path"
