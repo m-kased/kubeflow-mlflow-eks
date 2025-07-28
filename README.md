@@ -38,23 +38,6 @@ The architecture adopts a modular design:
 - **MLflow:** Integrated for experiment tracking and robust model management.
 - **Terraform:** Automates the entire infrastructure lifecycle.
 
-A simplified architecture diagram:
-
-```
-                 +-----------------+
-                 |   AWS Services  |
-                 | (IAM, VPC, S3)  |
-                 +--------+--------+
-                          |
-        +-----------------v-----------------+
-        |          Amazon EKS Cluster       |
-        +-----------+-----------+-----------+
-                    |           |
-          +---------v--+     +--v---------+
-          |  Kubeflow  |     |   MLflow   |
-          +------------+     +------------+
-```
-
 ## ML Platform Features
 
 ### Kubeflow
