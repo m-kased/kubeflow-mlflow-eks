@@ -80,9 +80,10 @@ A simplified architecture diagram:
 ### Setup Instructions
 1. Clone the repository.
 2. Configure AWS credentials.
-3. Update Terraform variables in `terraform.tfvars`.
-4. Run `terraform init` and `terraform apply` to provision the infrastructure.
-5. Access Kubeflow and MLflow dashboards through the provided endpoints.
+3. cd into the project folder and then into the `terraform` folder.
+4. Update Terraform variables in `terraform.tfvars`.
+5. Run `terraform init` and `terraform apply` to provision the infrastructure.
+6. Access Kubeflow and MLflow dashboards through the provided endpoints.
 
 ## Usage Examples
 
