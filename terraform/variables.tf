@@ -23,11 +23,7 @@ variable "eks_version" {
   type    = string
 }
 variable "terraform_tags" {
-  description = "tag all resources"
-  type        = map(any)
-  default = {
-    "provisioner" : "terraform"
-  }
+  type = map(any)
 }
 variable "grafana_password" {
   type = string
@@ -49,4 +45,7 @@ variable "tags" {
   description = "A map of tags to assign to the resources."
   type        = map(string)
   default     = {}
+}
+variable "domain" {
+  type = string
 }

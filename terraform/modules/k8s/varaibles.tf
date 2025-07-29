@@ -4,3 +4,6 @@ variable "env" {
 variable "terraform_tags" {
   type = map(any)
 }
+variable "domain" {
+  type = string
+}

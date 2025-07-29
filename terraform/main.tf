@@ -27,6 +27,7 @@ module "k8s" {
   }
   env            = var.env
   terraform_tags = var.terraform_tags
+  domain         = var.domain
 
   depends_on = [module.eks]
 }
@@ -68,4 +69,13 @@ module "mlflow" {
   terraform_tags   = var.terraform_tags
 
   depends_on = [module.eks, module.kubeflow]
+}
+
+module "gcp" {
+  source = "./modules/gcp"
+
+  region         = var.region
+  terraform_tags = var.terraform_tags
+
+  depends_on = [module.vpc]
 }
