@@ -1,0 +1,38 @@
+name: Compile & upload Kubeflow pipeline
+
+on:
+  push:
+    paths: ["pipelines/**"]
+  pull_request:
+    paths: ["pipelines/**"]
+
+jobs:
+  compile-upload:
+    runs-on: ubuntu-latest
+    permissions: { contents: read }
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_REGION: eu-central-1
+      PIPELINE_FILE: pipelines/housing_pipeline.py
+      KF_ENDPOINT: https://kubeflow.<DOMAIN>/pipeline
+      KF_USERNAME: admin
+      KF_PASSWORD: ${{ secrets.KF_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install kfp==2.5.0
+      - name: Compile
+        run: python $PIPELINE_FILE
+      - name: Upload & run
+        run: |
+          python - <<'PY'
+          import kfp, os
+          client = kfp.Client(host=os.environ["KF_ENDPOINT"],
+                              username=os.environ["KF_USERNAME"],
+                              password=os.environ["KF_PASSWORD"])
+          client.upload_pipeline("housing_pipeline.yaml", pipeline_name="housing-train-deploy")
+          client.create_run_from_pipeline_package("housing_pipeline.yaml",
+                                                  arguments={})
+          PY
